@@ -1,9 +1,12 @@
-#include "game.h"
+#include <future>
 #include <iostream>
+
+#include "game.h"
 #include "SDL.h"
 
 Game::Game(std::size_t grid_width, std::size_t grid_height)
     : snake(grid_width, grid_height),
+      random_snake(grid_width, grid_height),
       engine(dev()),
       random_w(0, static_cast<int>(grid_width - 1)),
       random_h(0, static_cast<int>(grid_height - 1)) {
@@ -25,7 +28,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
     // Input, Update, Render - the main game loop.
     controller.HandleInput(running, snake);
     Update();
-    renderer.Render(snake, food);
+    renderer.Render(snake, random_snake, food);
 
     frame_end = SDL_GetTicks();
 
@@ -68,18 +71,41 @@ void Game::PlaceFood() {
 void Game::Update() {
   if (!snake.alive) return;
 
-  snake.Update();
+  std::future<void> snake_ftr = std::async(&Snake::Update, &snake);
+  std::future<void> random_snake_ftr = std::async(&RandomSnake::Update, &random_snake);
 
-  int new_x = static_cast<int>(snake.head_x);
-  int new_y = static_cast<int>(snake.head_y);
+  snake_ftr.wait();
+  random_snake_ftr.wait();
+
+  // We also check for a collision between the snakes
+  SDL_Point random_snake_head = {static_cast<int>(random_snake.head_x),
+    static_cast<int>(random_snake.head_y)};
+  SDL_Point snake_head = {static_cast<int>(snake.head_x),
+    static_cast<int>(snake.head_y)};
+  if (random_snake_head.x == snake_head.x and random_snake_head.y == snake_head.y)
+    snake.alive = false;
+  for (SDL_Point const &item : snake.body) {
+    if (random_snake_head.x == item.x and random_snake_head.y == item.y)
+      snake.alive = false;
+  }
+  for (SDL_Point const &item : random_snake.body) {
+    if (snake_head.x == item.x and snake_head.y == item.y)
+      snake.alive = false;
+  }
 
   // Check if there's food over here
-  if (food.x == new_x && food.y == new_y) {
+  if (food.x == static_cast<int>(snake.head_x) && food.y == static_cast<int>(snake.head_y)) {
     score++;
     PlaceFood();
-    // Grow snake and increase speed.
+    // Grow snake and increase speed of the user's snake and the random snake.
     snake.GrowBody();
     snake.speed += 0.02;
+    random_snake.speed += 0.02;
+  } else if (food.x == static_cast<int>(random_snake.head_x) && food.y == static_cast<int>(random_snake.head_y)) {
+    PlaceFood();
+    // Grow snake and increase speed.
+    random_snake.GrowBody();
+    random_snake.speed += 0.02;
   }
 }
 

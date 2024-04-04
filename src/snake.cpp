@@ -1,6 +1,21 @@
 #include "snake.h"
 #include <cmath>
 #include <iostream>
+#include <fstream>
+
+Snake::Snake(int grid_width, int grid_height) :
+    grid_width(grid_width), grid_height(grid_height),
+    head_x(grid_width / 2), head_y(grid_height / 2) {
+  std::ifstream speedfile("speed.txt");
+  if (speedfile.is_open()) {
+    std::string line;
+    getline(speedfile, line);
+    float newSpeed;
+    newSpeed = std::stof(line);
+    this->speed = newSpeed;
+    speedfile.close();
+  } // else we leave the speed as the default value (0.1)
+}
 
 void Snake::Update() {
   SDL_Point prev_cell{
