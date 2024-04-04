@@ -37,9 +37,9 @@ score leaderboard, and the ability to control the initial speed the snakes move 
 if it touches you or you touch it, the game is over. The score leaderboard is accessible as a scores.txt file and shows 
 the top 10 scores achieved. To control the initial speed of the game you can change a speed.txt file to be any value you would like.
 
-## Rubric Points Addressed
+# Rubric Points Addressed
 
-# Loops, Functions, I/O
+## Loops, Functions, I/O
 
 This program demonstrates an understanding of C++ functions and control structures (throughout).
 
@@ -49,7 +49,7 @@ This program accepts user input and processes the input (input from files - scor
 
 This program uses data structures and immutable variables (throughout, e.g. scores.cpp).
 
-# Object Oriented Programming
+## Object Oriented Programming
 
 One or more classes are added to the project with appropriate access specifiers for class members (random_snake.h, scores.h)
 
@@ -59,7 +59,7 @@ Classes abstract implementation details from their interfaces (snake.h, random_s
 
 Classes follow an appropriate inheritance hierarchy with virtual and override functions (snake.h, random_snake.h)
 
-# Memory Management
+## Memory Management
 
 The project makes use of references in function declarations (snake.h line 29, game.h line 14, controller.h lines 8 and 11, renderer.h line 16)
 
@@ -67,7 +67,7 @@ The project uses score / Resource Aquisition is Initialization (RAII) where appr
 
 The project uses smart pointers instead of raw pointers (scores.h line 17)
 
-# Concurrency
+## Concurrency
 
 The project uses multithreading (game.cpp lines 74-78)
 
